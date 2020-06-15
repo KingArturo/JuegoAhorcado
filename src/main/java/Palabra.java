@@ -14,8 +14,12 @@ public class Palabra {
         palabras = new ArrayList<>();
         leeArchivo();
         aleatorio=new Random();
-        pl = palabras.get(aleatorio.nextInt(palabras.size()));
+        getPalabraRandom();
 
+    }
+
+    public void getPalabraRandom() {
+        pl = palabras.get(aleatorio.nextInt(palabras.size()));
     }
 
     /**

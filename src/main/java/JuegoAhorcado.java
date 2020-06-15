@@ -17,9 +17,10 @@ public class JuegoAhorcado {
      */
     public JuegoAhorcado() {
         sc = new Scanner(System.in);
-        vida = 1;
-        System.out.println("Introduce tu nombre: ");
-        nombre = sc.nextLine();
+        palabra = new Palabra();
+        vida = palabra.convertirPalabra().length;
+        letrasAcertadas = new String[palabra.convertirPalabra().length];
+        letrasAcertadas = palabraConGuiones();
         score = 0;
     }
 
@@ -33,7 +34,7 @@ public class JuegoAhorcado {
      */
     public void comenzarJuego(boolean godMode) {
         while (vida>0) {
-            palabra = new Palabra();
+            palabra.getPalabraRandom();
             letrasAcertadas = new String[palabra.convertirPalabra().length];
             vida = palabra.convertirPalabra().length;
             letrasAcertadas = palabraConGuiones();
@@ -41,12 +42,10 @@ public class JuegoAhorcado {
 
             String[] letras = palabra.convertirPalabra();
             ArrayList<String> listLetras = new ArrayList<>(Arrays.asList(letras));
-            System.out.println(palabraOculta(""));
-            System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
 
             while(!hasGanado && vida>0) {
                 ArrayList<String> acertadas = new ArrayList<>(Arrays.asList(letrasAcertadas));
-                barraVida();
+                System.out.println(barraVida());;
                 System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
                 System.out.println("Introduce una letra o la palabra");
                 if (godMode) {
@@ -78,42 +77,69 @@ public class JuegoAhorcado {
                     }
                 }
             }
-            if (vida>0) {
-                System.out.println("\u001B[33m"+"Has procedido a la ganacion"+"\u001B[0m");
-                System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
-                System.out.println("\u001B[33m"+"La palabra es: " + palabra+"\u001B[0m");
-                score += (palabra.convertirPalabra().length-(palabra.convertirPalabra().length - vida));
-                System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
-                System.out.println("Tu puntuacion es: " +score+ " Orens");
-                System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
-                System.out.println("\u001B[33m"+"Vuelves a jugar"+"\u001B[0m");
-            }
-            else {
-                System.out.println("\u001B[31m"+"Eres un manco"+"\u001B[0m");
-                System.out.println("\u001B[31m"+"La palabra era " + palabra+"\u001B[0m");
-                System.out.println("Tu puntuacion ha sido de: " +score+ " Orens");
-                getAhorcado();
-            }
         }
 
 
+    }
+
+    public boolean acertado(String letra) {
+        boolean bl = false;
+
+        String[] letras = palabra.convertirPalabra();
+        ArrayList<String> listLetras = new ArrayList<>(Arrays.asList(letras));
+        ArrayList<String> acertadas = new ArrayList<>(Arrays.asList(letrasAcertadas));
+
+        System.out.println(palabraOculta(letra));
+
+        if (letra.length() <= 1) {
+            if (acertadas.contains(letra)) {
+                vida--;
+            }
+            else if(listLetras.contains(letra)) {
+                for(int i=0; i<letrasAcertadas.length; i++) {
+                    if (palabra.convertirPalabra()[i].equals(letra)) {
+                        letrasAcertadas[i]=letra;
+                    }
+
+                }
+                palabraAcertada();
+                bl=true;
+            }
+            else{
+                vida--;
+            }
+        } else {
+            if (letra.equals(palabra.toString())) {
+                letrasAcertadas = palabra.convertirPalabra();
+                for(int i=0; i<letrasAcertadas.length; i++) {
+                    if (palabra.convertirPalabra()[i].equals(letra)) {
+                        letrasAcertadas[i]=letra;
+                    }
+
+                }
+                palabraAcertada();
+            } else {
+                vida -= 2;
+            }
+        }
+        return bl;
     }
 
     /**
      * Metodo que genera la barra de vida del jugador
      */
-    public void barraVida() {
+    public String barraVida() {
         String puntosVida = "";
         for(int i=0; i<vida; i++) {
             puntosVida+="*";
         }
-        System.out.println("Tu vida es: " + "\033[36m"+puntosVida+"\u001B[0m");
+        return   puntosVida;
     }
 
     /**
      * Metodo que sustituye los guiones por la letra que el jugador a acertado
      * Se necesita que se le pase por parametro un String con la letra
-     * @param letra a sustituir
+     * @param letraComparar a sustituir
      * @return devuelve la palabra con la letra en su posicion
      */
     public String palabraOculta(String letraComparar) {
@@ -172,5 +198,9 @@ public class JuegoAhorcado {
                 s.close();
             }
         }
+    }
+
+    public String getPalabra() {
+        return palabra.toString();
     }
 }
