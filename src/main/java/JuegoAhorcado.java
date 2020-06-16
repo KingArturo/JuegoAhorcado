@@ -8,28 +8,21 @@ public class JuegoAhorcado {
     private int vida;
     private String nombre;
     private String[] letrasAcertadas;
-    private boolean hasGanado;
-    private int score;
     private int puntos;
-    private boolean win;
-    private Scanner sc;
 
     /**
      * Construntor de la clase JuegoAhoracado
      */
     public JuegoAhorcado() {
         puntos = 0;
-        win = false;
-        sc = new Scanner(System.in);
         palabra = new Palabra();
         vida = palabra.convertirPalabra().length;
         letrasAcertadas = new String[palabra.convertirPalabra().length];
         letrasAcertadas = palabraConGuiones();
-        score = 0;
     }
 
     public static void main(String[] args) {
-        JuegoAhorcado juego = new JuegoAhorcado();
+
     }
 
 
@@ -41,15 +34,12 @@ public class JuegoAhorcado {
         ArrayList<String> listLetras = new ArrayList<>(Arrays.asList(letras));
         ArrayList<String> acertadas = new ArrayList<>(Arrays.asList(letrasAcertadas));
 
-        System.out.println(palabraOculta(letra));
-
         if (letra.length() <= 1) {
             if (acertadas.contains(letra)) {
                 vida--;
             }
             else if(listLetras.contains(letra)) {
                 mostrarPalabraOculta(letra);
-                palabraAcertada();
                 bl = true;
             }
             else{
@@ -60,7 +50,6 @@ public class JuegoAhorcado {
                 letrasAcertadas = palabra.convertirPalabra();
                 mostrarPalabraOculta(letra);
                 puntos = palabra.convertirPalabra().length;
-                palabraAcertada();
                 bl = true;
             } else {
                 vida -= 2;
@@ -69,16 +58,25 @@ public class JuegoAhorcado {
         return bl;
     }
 
+    /**
+     * Devuelve true si el jugador a acertado todas las letras de la palabra
+     * @return
+     */
     public boolean win() {
+        boolean win = false;
         if(puntos == palabra.convertirPalabra().length) {
             win = true;
         }
         return win;
     }
 
+    /**
+     * Devuelve true si la vida del jugador el 0
+     * @return
+     */
     public boolean loose() {
         boolean loose = false;
-        if(vida == 0) {
+        if(vida <= 0) {
             loose = true;
         }
         return loose;
@@ -124,16 +122,6 @@ public class JuegoAhorcado {
     }
 
     /**
-     * Metodo que devuelve verdadero si la palabra ha sido acertada por el jugador
-     */
-    public void palabraAcertada() {
-        ArrayList<String> acertado = new ArrayList<>(Arrays.asList(letrasAcertadas));
-        if (!acertado.contains("-")) {
-            hasGanado=true;
-        }
-    }
-
-    /**
      * Metodo que devuelve un array de String lleno de guiones y con la
      * longitud de la palabra a acertar
      * @return array de String lleno de guinoes
@@ -145,10 +133,11 @@ public class JuegoAhorcado {
         }
         return guiones;
     }
-    /**
-     * Metodo que muestra una imagen del ahoracado en ASCII, desde un archivo externo
-     */
 
+    /**
+     * Devuelve un estring con la omages de un ahorcado
+     * @return
+     */
     public String getAhorcado() {
         Scanner s = null;
         String ahorcado = "";
@@ -173,6 +162,10 @@ public class JuegoAhorcado {
     }
 
 
+    /**
+     * Metodo que devuelve la palabra  a adivinar
+     * @return
+     */
     public String getPalabra() {
         return palabra.toString();
     }
