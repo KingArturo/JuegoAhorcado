@@ -10,12 +10,16 @@ public class JuegoAhorcado {
     private String[] letrasAcertadas;
     private boolean hasGanado;
     private int score;
+    private int puntos;
+    private boolean win;
     private Scanner sc;
 
     /**
      * Construntor de la clase JuegoAhoracado
      */
     public JuegoAhorcado() {
+        puntos = 0;
+        win = false;
         sc = new Scanner(System.in);
         palabra = new Palabra();
         vida = palabra.convertirPalabra().length;
@@ -26,61 +30,9 @@ public class JuegoAhorcado {
 
     public static void main(String[] args) {
         JuegoAhorcado juego = new JuegoAhorcado();
-        juego.comenzarJuego(true);
     }
 
-    /**
-     * Metodo que permite que comienze el juego
-     */
-    public void comenzarJuego(boolean godMode) {
-        while (vida>0) {
-            palabra.getPalabraRandom();
-            letrasAcertadas = new String[palabra.convertirPalabra().length];
-            vida = palabra.convertirPalabra().length;
-            letrasAcertadas = palabraConGuiones();
-            hasGanado = false;
 
-            String[] letras = palabra.convertirPalabra();
-            ArrayList<String> listLetras = new ArrayList<>(Arrays.asList(letras));
-
-            while(!hasGanado && vida>0) {
-                ArrayList<String> acertadas = new ArrayList<>(Arrays.asList(letrasAcertadas));
-                System.out.println(barraVida());;
-                System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
-                System.out.println("Introduce una letra o la palabra");
-                if (godMode) {
-                    System.out.println("\u001B[33m"+"La palabra es: " + palabra+"\u001B[0m");
-                }
-                String letra = sc.nextLine().toLowerCase();
-                System.out.println(palabraOculta(letra));
-                System.out.println("\033[35m"+"<===================>"+"\u001B[0m");
-
-                if (letra.length() <= 1) {
-                    if (acertadas.contains(letra)) {
-                        vida--;
-                        System.out.println("\u001B[31m"+"Esta letra ya la has dicho"+"\u001B[0m");
-                    }
-                    else if(listLetras.contains(letra)) {
-                        System.out.println("\u001B[33m"+"Bien hecho " + nombre+"\u001B[0m");
-                        palabraAcertada();
-                    }
-                    else{
-                        vida--;
-                        System.out.println("\u001B[31m"+"Has fallado " + nombre+"\u001B[0m");
-                    }
-                } else {
-                    if (letra.equals(palabra.toString())) {
-                        letrasAcertadas = palabra.convertirPalabra();
-                        palabraAcertada();
-                    } else {
-                        vida -= 2;
-                    }
-                }
-            }
-        }
-
-
-    }
 
     public boolean acertado(String letra) {
         boolean bl = false;
@@ -96,14 +48,9 @@ public class JuegoAhorcado {
                 vida--;
             }
             else if(listLetras.contains(letra)) {
-                for(int i=0; i<letrasAcertadas.length; i++) {
-                    if (palabra.convertirPalabra()[i].equals(letra)) {
-                        letrasAcertadas[i]=letra;
-                    }
-
-                }
+                mostrarPalabraOculta(letra);
                 palabraAcertada();
-                bl=true;
+                bl = true;
             }
             else{
                 vida--;
@@ -111,18 +58,30 @@ public class JuegoAhorcado {
         } else {
             if (letra.equals(palabra.toString())) {
                 letrasAcertadas = palabra.convertirPalabra();
-                for(int i=0; i<letrasAcertadas.length; i++) {
-                    if (palabra.convertirPalabra()[i].equals(letra)) {
-                        letrasAcertadas[i]=letra;
-                    }
-
-                }
+                mostrarPalabraOculta(letra);
+                puntos = palabra.convertirPalabra().length;
                 palabraAcertada();
+                bl = true;
             } else {
                 vida -= 2;
             }
         }
         return bl;
+    }
+
+    public boolean win() {
+        if(puntos == palabra.convertirPalabra().length) {
+            win = true;
+        }
+        return win;
+    }
+
+    public boolean loose() {
+        boolean loose = false;
+        if(vida == 0) {
+            loose = true;
+        }
+        return loose;
     }
 
     /**
@@ -134,6 +93,16 @@ public class JuegoAhorcado {
             puntosVida+="*";
         }
         return   puntosVida;
+    }
+
+    public void mostrarPalabraOculta(String letra) {
+        for(int i=0; i<letrasAcertadas.length; i++) {
+            if (palabra.convertirPalabra()[i].equals(letra)) {
+                letrasAcertadas[i]=letra;
+                puntos++;
+            }
+
+        }
     }
 
     /**
@@ -180,25 +149,29 @@ public class JuegoAhorcado {
      * Metodo que muestra una imagen del ahoracado en ASCII, desde un archivo externo
      */
 
-    public void getAhorcado() {
+    public String getAhorcado() {
         Scanner s = null;
+        String ahorcado = "";
         try{
             String text = "ahorcado.txt";
             File fl = new File(text);
             s = new Scanner(fl);
             while(s.hasNextLine()) {
-                System.out.println( "\033[36m"+s.nextLine()+"\u001B[0m");
+                ahorcado += s.nextLine() + "\n";
             }
+
         }
         catch(Exception e){
-            System.out.println(e);
+            ahorcado = "Erro";
         }
         finally {
             if(s != null) {
                 s.close();
             }
         }
+        return ahorcado;
     }
+
 
     public String getPalabra() {
         return palabra.toString();

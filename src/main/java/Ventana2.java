@@ -80,5 +80,9 @@ public class Ventana2 extends JFrame implements ActionListener {
         label4.setText(juego.palabraOculta(text.getText()));
         label2.setText(juego.barraVida());
     }
+    
+    public void hasGanado() {
+    	
+    }
 
 }
